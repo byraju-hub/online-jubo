@@ -1,0 +1,148 @@
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+@import '@fontsource-variable/noto-serif-kr';
+
+:root {
+	color-scheme: light dark;
+
+	/* 종이 위에 인쇄한 주보처럼 — 따뜻한 지면, 청색 괘선, 코랄 포인트 (원본 PDF의 색 체계) */
+	--paper: #faf6ee;
+	--paper-2: #f3eadb;
+	--surface: #fffdf8;
+	--ink: #1d2433;
+	--muted: #586174;
+	--rule: #dcd3c2;
+	--rule-strong: #c4b9a4;
+	--blue: #2f6aa8;
+	--blue-soft: #6fa0d6;
+	--coral: #b84a1f; /* 글자용 (대비 5:1) */
+	--coral-fill: #ee7d4f; /* 면/장식용 */
+	--leaf: #587a2e;
+
+	--font-sans: 'Pretendard Variable', Pretendard, system-ui, -apple-system, 'Apple SD Gothic Neo',
+		'Malgun Gothic', sans-serif;
+	--font-serif: 'Noto Serif KR Variable', 'Noto Serif KR', 'Nanum Myeongjo', serif;
+
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+	--s1: 0.25rem;
+	--s2: 0.5rem;
+	--s3: 0.75rem;
+	--s4: 1rem;
+	--s5: 1.5rem;
+	--s6: 2rem;
+	--s7: 3rem;
+	--s8: 4.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--paper: #131925;
+		--paper-2: #1b2333;
+		--surface: #18202e;
+		--ink: #ece8df;
+		--muted: #a3abbb;
+		--rule: #2b3548;
+		--rule-strong: #3a4660;
+		--blue: #8db8e8;
+		--blue-soft: #5d86b8;
+		--coral: #f39a72;
+		--coral-fill: #ee7d4f;
+		--leaf: #9cc06a;
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+	scroll-padding-top: 5rem;
+}
+
+body {
+	margin: 0;
+	background: var(--paper);
+	color: var(--ink);
+	font-family: var(--font-sans);
+	font-size: 1rem;
+	line-height: 1.65;
+	letter-spacing: -0.01em;
+	word-break: keep-all;
+	overflow-wrap: break-word;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p {
+	margin: 0;
+}
+
+h1,
+h2,
+h3 {
+	text-wrap: balance;
+}
+
+p {
+	text-wrap: pretty;
+}
+
+ol,
+ul,
+dl,
+dd {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+a {
+	color: inherit;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+}
+
+button {
+	font: inherit;
+	color: inherit;
+}
+
+::selection {
+	background: color-mix(in srgb, var(--coral-fill) 35%, transparent);
+}
+
+:focus-visible {
+	outline: 2px solid var(--blue);
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+	html {
+		scrollbar-color: var(--rule-strong) var(--paper);
+	}
+}
+
+.num {
+	font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
