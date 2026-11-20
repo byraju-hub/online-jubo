@@ -24,7 +24,29 @@ npm run dev
 
 익명 키는 `published = true` 인 행만 읽을 수 있고, 쓰기는 service role 로만 가능합니다.
 
-## 매주 주보 올리기
+## 자동 생성 (교회 홈페이지 교회소식 → 온라인 주보)
+
+[dbchurch.net 교회소식](https://dbchurch.net/news?category=%EA%B5%90%ED%9A%8C%EC%86%8C%EC%8B%9D&page=1)에 'YYYY년 M월 D일 교회소식' 글과 주보 PDF 가 올라오면,
+`.github/workflows/sync-bulletin.yml` 이 매시간 `scripts/sync-from-dbchurch.mjs` 를 실행해 **확인 없이 바로 게시**합니다.
+
+1. 교회소식 1쪽에서 주보 글을 찾는다 (최근 45일, 이미 있는 날짜는 건너뜀)
+2. 글의 PDF(공개 Supabase 저장소 주소만)를 받아 Claude API(`claude-sonnet-5-5`)로 정해 둔 칸만 읽는다
+3. 글 제목의 날짜와 PDF 의 날짜가 같은지·필요한 칸이 있는지 검사 → `bulletins` 에 upsert
+4. 실패하면 `bulletin_jobs.last_error` 에 이유를 적고 30분 뒤 다시(최대 3번)
+
+설정: GitHub 저장소 → Settings → Secrets and variables → Actions 에 `PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY` 를 등록하고,
+Supabase SQL Editor 에서 `supabase/schema.sql` 을 (이미 했더라도 `bulletin_jobs` 때문에) 다시 실행합니다. 값이 없으면 아무것도 하지 않고 끝납니다.
+
+```bash
+node scripts/sync-from-dbchurch.mjs --dry                      # 키 없이 무엇을 처리할지 목록만
+node --env-file=.env scripts/sync-from-dbchurch.mjs            # 지금 한 번 실행 (ANTHROPIC_API_KEY 도 .env 에)
+node scripts/extract.test.mjs                                  # 읽기 결과 검사 로직 테스트
+```
+
+같은 날짜가 다시 만들어지면 덮어씁니다. 잘못 읽은 곳은 Supabase 에서 `bulletins.content` 를 직접 고칩니다. (GitHub 는 60일간 활동이 없으면 예약 실행을 멈추므로, 멈추면 Actions 탭에서 다시 켭니다.)
+교회 홈페이지 저장소(`jyub86/dbw`)에는 같은 기능이 엣지 함수(`bulletin-from-post`)와 `/bulletin` 화면으로 PR 되어 있습니다.
+
+## 수동으로 주보 올리기
 
 1. `src/lib/data/` 의 JSON 하나를 복사해 새 주 내용으로 수정 (스키마: `src/lib/types.ts`)
 2. `.env` 에 `SUPABASE_SERVICE_ROLE_KEY` 를 넣고 실행:

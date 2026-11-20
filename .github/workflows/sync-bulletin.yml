@@ -1,0 +1,33 @@
+# dbchurch.net 교회소식에 올라온 주보 PDF 를 찾아 온라인 주보를 자동 게시한다 (scripts/sync-from-dbchurch.mjs).
+# 필요한 저장소 Secrets: PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY (없으면 아무것도 하지 않고 끝남)
+# 참고: GitHub 는 60일 동안 저장소 활동이 없으면 예약 실행을 멈춘다. 멈추면 Actions 탭에서 다시 켠다.
+name: sync-bulletin
+
+on:
+  schedule:
+    - cron: '20 * * * *' # 매시 20분 (UTC)
+  workflow_dispatch: {}
+
+concurrency:
+  group: sync-bulletin
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node scripts/sync-from-dbchurch.mjs
+        env:
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

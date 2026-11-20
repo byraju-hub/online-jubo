@@ -68,8 +68,12 @@
 					<p class="issue num">{b.volume}권 {b.issueNo}호</p>
 					<h1 id="hero-title">
 						<span class="num">{when.m}월 {when.d}일</span>
-						<span class="wd">{when.weekday}요일</span>
+						<span class="wd">{when.weekday === '일' ? '주일' : `${when.weekday}요일`}</span>
 					</h1>
+					<p class="theme">
+						<span class="theme-lead"><span class="num">{church.theme.year}</span> {church.theme.lead}</span>
+						<span class="theme-title">{church.theme.title}</span>
+					</p>
 					<p class="service-line">
 						<strong>{c.service.label}</strong>
 						<span class="dot" aria-hidden="true"></span>
@@ -80,8 +84,6 @@
 							<p>{c.theme.verse}</p>
 							<footer>{c.theme.ref}</footer>
 						</blockquote>
-					{:else if c.motto}
-						<p class="motto">{c.motto}</p>
 					{/if}
 				</div>
 
@@ -566,12 +568,23 @@
 		background: var(--coral-fill);
 		flex: none;
 	}
-	.motto {
-		margin-top: var(--s4);
+	.theme {
+		display: grid;
+		gap: 0.1rem;
+		margin-top: var(--s3);
+	}
+	.theme-lead {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--muted);
+	}
+	.theme-title {
 		font-family: var(--font-serif);
-		font-size: 1rem;
+		font-weight: 700;
+		font-size: clamp(1.375rem, 3.6vw, 1.875rem);
+		line-height: 1.3;
+		letter-spacing: -0.025em;
 		color: var(--leaf);
-		font-weight: 600;
 	}
 	.verse {
 		margin: var(--s4) 0 0;

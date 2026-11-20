@@ -31,3 +31,19 @@ begin new.updated_at = now(); return new; end $$;
 drop trigger if exists bulletins_touch on public.bulletins;
 create trigger bulletins_touch before update on public.bulletins
   for each row execute function public.touch_updated_at();
+
+-- ───────── 자동 생성(scripts/sync-from-dbchurch.mjs) 처리 기록 ─────────
+-- dbchurch.net 교회소식 글 한 건(source_id = /news/{id}의 id)당 한 줄. service_role 키만 읽고 쓴다(정책 없음).
+create table if not exists public.bulletin_jobs (
+  source_id        text primary key,
+  issue_date       date not null,
+  status           text not null default 'pending' check (status in ('pending', 'done', 'failed')),
+  attempts         int  not null default 0,
+  last_attempt_at  timestamptz,
+  last_error       text,
+  input_tokens     int,
+  output_tokens    int,
+  updated_at       timestamptz not null default now()
+);
+alter table public.bulletin_jobs enable row level security;
+revoke all on public.bulletin_jobs from anon, authenticated;
