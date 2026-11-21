@@ -12,6 +12,16 @@
 	const when = $derived(parseDate(b.date));
 	const chips = $derived([...data.issues].slice(0, 8).reverse());
 	const sermonItem = $derived(c.service.items.find((i) => i.emphasis));
+
+	// 좁은 화면에서 현재 주차 탭이 오른쪽에 잘려 보이지 않도록 보이는 위치로 맞춘다
+	function keepCurrentInView(nav: HTMLElement, _date: string) {
+		const fit = () => {
+			const cur = nav.querySelector<HTMLElement>('[aria-current="page"]');
+			if (cur) nav.scrollLeft = cur.offsetLeft + cur.offsetWidth - nav.clientWidth + 12;
+		};
+		fit();
+		return { update: fit };
+	}
 </script>
 
 <svelte:head>
@@ -40,7 +50,7 @@
 			<span>{church.name}</span>
 		</a>
 
-		<nav class="weeks" aria-label="지난 주보">
+		<nav class="weeks" aria-label="지난 주보" use:keepCurrentInView={b.date}>
 			<ul>
 				{#each chips as it (it.date)}
 					<li>
@@ -461,6 +471,7 @@
 
 	.sheet {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--s6);
 	}
 
@@ -568,6 +579,15 @@
 		background: var(--coral-fill);
 		flex: none;
 	}
+	/* 좁은 화면에서는 줄이 바뀌면 점만 줄 끝에 남으므로 숨긴다 */
+	@media (max-width: 520px) {
+		.dot {
+			display: none;
+		}
+		.service-line strong {
+			flex-basis: 100%;
+		}
+	}
 	.theme {
 		display: grid;
 		gap: 0.1rem;
@@ -645,11 +665,13 @@
 	/* ───────── 2단 ───────── */
 	.cols {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--s6);
 		align-items: start;
 	}
 	.side {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--s6);
 	}
 
@@ -659,7 +681,7 @@
 	}
 	.order li {
 		display: grid;
-		grid-template-columns: 5.5rem 1fr;
+		grid-template-columns: 5.5rem minmax(0, 1fr);
 		gap: var(--s3);
 		padding: 0.55rem var(--s2);
 		align-items: baseline;
@@ -732,7 +754,7 @@
 	}
 	.news li {
 		display: grid;
-		grid-template-columns: 1.5rem 1fr;
+		grid-template-columns: 1.5rem minmax(0, 1fr);
 		gap: var(--s2);
 	}
 	.news .n {
@@ -807,7 +829,7 @@
 	/* 교회행사 */
 	.events li {
 		display: grid;
-		grid-template-columns: 6.5rem 1fr;
+		grid-template-columns: 6.5rem minmax(0, 1fr);
 		gap: var(--s3);
 		padding: 0.5rem 0;
 	}
@@ -888,7 +910,7 @@
 	}
 	.w-lines div {
 		display: grid;
-		grid-template-columns: 4.5rem 1fr;
+		grid-template-columns: 4.5rem minmax(0, 1fr);
 		gap: var(--s2);
 		align-items: baseline;
 	}
@@ -901,6 +923,7 @@
 	/* ───────── 하단 3열 ───────── */
 	.trio {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--s6);
 		align-items: start;
 	}
@@ -910,7 +933,7 @@
 	}
 	.kv > div {
 		display: grid;
-		grid-template-columns: 5.5rem 1fr;
+		grid-template-columns: 5.5rem minmax(0, 1fr);
 		gap: var(--s2);
 		align-items: baseline;
 	}
